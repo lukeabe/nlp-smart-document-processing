@@ -81,3 +81,17 @@ instance/
 
 # Ignore files created by the testing process
 *.pytest_cache/
+
+# Wikipedia
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+*.env
+*.env.*
+.ipynb_checkpoints
+data/raw/*
+data/processed/*
+models/saved_model/*
