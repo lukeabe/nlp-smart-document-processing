@@ -1,22 +1,26 @@
-import re
+import ssl
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+# Ignore SSL certificate verification
+ssl._create_default_https_context = ssl._create_unverified_context
 
-def preprocess_text(text: str) -> str:
-    text = re.sub(r'\[\d+\]', '', text)  # Remove references
-    text = re.sub(r'\W+', ' ', text)  # Remove special characters and numbers
+def preprocess_text(text):
+    # Tokenization
+    tokens = word_tokenize(text)
     
-    tokens = word_tokenize(text.lower())
+    # Lowercasing and removing punctuation
+    tokens = [word.lower() for word in tokens if word.isalpha()]
     
+    # Removing stopwords
     stop_words = set(stopwords.words('english'))
+    tokens = [word for word in tokens if word not in stop_words]
+    
+    # Lemmatization
     lemmatizer = WordNetLemmatizer()
+    tokens = [lemmatizer.lemmatize(word) for word in tokens]
     
-    processed_text = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
-    
-    return ' '.join(processed_text)
+    # Join tokens back to string
+    return ' '.join(tokens)
