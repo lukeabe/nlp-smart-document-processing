@@ -1,7 +1,12 @@
 from transformers import pipeline
 
 # Initialize the sentiment analysis pipeline
-sentiment_analyzer = pipeline("sentiment-analysis")
+# Specify the model name and revision explicitly
+sentiment_analyzer = pipeline(
+    "sentiment-analysis", 
+    model="distilbert-base-uncased-finetuned-sst-2-english", 
+    revision="af0f99b"  # You can specify a different revision if needed
+)
 
 def analyze_sentiment(text: str) -> dict:
     # Perform sentiment analysis

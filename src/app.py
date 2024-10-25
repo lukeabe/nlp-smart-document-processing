@@ -4,6 +4,16 @@ from preprocessing import preprocess_text
 from summarization import summarize_text
 from sentiment_analysis import analyze_sentiment
 
+def chunk_text(text, chunk_size=1024):
+    """Splits the text into chunks that fit within the model's token limit."""
+    return [text[i:i + chunk_size] for i in range(0, len(text), chunk_size)]
+
+def summarize_large_text(text, chunk_size=1024):
+    chunks = chunk_text(text, chunk_size)
+    summaries = [summarize_text(chunk) for chunk in chunks]
+    combined_summary = " ".join(summaries)
+    return combined_summary
+
 def main():
     user_agent = "YourAppName/1.0 (lukeabraham1175@gmail.com)"
     page_title = "Lacrosse"  # Example page title
@@ -13,38 +23,23 @@ def main():
         content = fetch_wikipedia_content(page_title, user_agent)
         print(f"Loaded Content Length: {len(content)} characters")
         
-        # Take a small portion for testing
-        small_content = content[:100]  # Adjust the size as needed for testing
-        print(f"Small Content Length: {len(small_content)} characters")
+        # Take a larger portion for testing
+        large_content = content[:10000]  # Adjust the size as needed
+        print(f"Large Content Length: {len(large_content)} characters")
         
         # Preprocess the content
-        preprocessed_content = preprocess_text(small_content)
+        preprocessed_content = preprocess_text(large_content)
         print(f"Preprocessed Content Length: {len(preprocessed_content)} characters")
         
-        # Summarize the content
-        summary = summarize_text(preprocessed_content)
+        # Summarize the content in chunks
+        summary = summarize_large_text(preprocessed_content)
         print(f"Summary:\n{summary}")
         
-        # Analyze the sentiment of the summary
-        sentiment = analyze_sentiment(summary)
-        print(f"Sentiment Analysis:\n{sentiment}")
-        
-        # Save the summary and sentiment analysis
-        summary_path = os.path.join('data', f'{page_title}_summary.txt')
-        sentiment_path = os.path.join('data', f'{page_title}_sentiment.txt')
-        
-        # Ensure the 'data' directory exists
-        os.makedirs('data', exist_ok=True)
-        
         # Save the summary
+        summary_path = os.path.join('data', page_title + '_summary.txt')
         with open(summary_path, 'w') as file:
             file.write(summary)
         print(f"Summary has been saved to '{summary_path}'.")
-        
-        # Save the sentiment analysis
-        with open(sentiment_path, 'w') as file:
-            file.write(f"Sentiment Analysis: {sentiment}\n")
-        print(f"Sentiment analysis has been saved to '{sentiment_path}'.")
         
     except Exception as e:
         print(f"An error occurred: {e}")
